@@ -1,23 +1,7 @@
-provider "google" {
-  credentials = "${file("service-account.json")}"
-  project = "mapan-243606"
-  region = "us-central1"
-  zone = "us-central1-c"
-}
-
-data "template_file" "nginx_conf" {
-  template = "${file("default")}"
-
-  vars = {
-    web1_ip = "${google_compute_instance.vm1-test.network_interface.0.network_ip}"
-    web2_ip = "${google_compute_instance.vm2-test.network_interface.0.network_ip}"
-  }
-}
-
 resource "google_compute_instance" "vm1-test" {
   name = "vm1-test"
   machine_type = "g1-small"
-  metadata_startup_script = "${file("script.sh")}"
+  metadata_startup_script = "${file("backend_script.sh")}"
 
   boot_disk {
     initialize_params {
@@ -41,7 +25,7 @@ resource "google_compute_instance" "vm1-test" {
 resource "google_compute_instance" "vm2-test" {
   name = "vm2-test"
   machine_type = "g1-small"
-  metadata_startup_script = "${file("script.sh")}"
+  metadata_startup_script = "${file("backend_script.sh")}"
 
   boot_disk {
     initialize_params {
