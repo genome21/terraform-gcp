@@ -6,7 +6,7 @@ provider "google" {
 }
 
 data "template_file" "nginx_conf" {
-  template = "${file("nginx.conf")}"
+  template = "${file("default")}"
 
   vars = {
     web1_ip = "${google_compute_instance.vm1-test.network_interface.0.network_ip}"
@@ -21,7 +21,7 @@ resource "google_compute_instance" "vm1-test" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-1804-lts"
+      image = "ubuntu-os-cloud/ubuntu-minimal-1804-lts"
     }
   }
 
@@ -32,6 +32,9 @@ resource "google_compute_instance" "vm1-test" {
 
   network_interface {
     network = "default"
+    access_config{
+
+    }
   }
 }
 
@@ -53,6 +56,9 @@ resource "google_compute_instance" "vm2-test" {
 
   network_interface {
     network = "default"
+    access_config{
+
+    }
   }
 }
 
@@ -87,22 +93,17 @@ resource "google_compute_instance" "load-balancer" {
       timeout = "30s"
   }
 
+  provisioner "file" {
+    content = "${data.template_file.nginx_conf.rendered}"
+    destination = "~/default"
+  }
+
   provisioner "remote-exec" {
     inline = [
       "sleep 5",
       "sudo apt-get -y update",
       "sudo apt-get -y install nginx",
-    ]
-  }
-
-  provisioner "file" {
-    content = "${data.template_file.nginx_conf.rendered}"
-    destination = "~/nginx.conf"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo cp ~/nginx.conf /etc/nginx/nginx.conf",
+      "sudo cp ~/default /etc/nginx/sites-available/default",
       "sudo systemctl restart nginx"
     ]
   }
