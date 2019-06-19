@@ -120,4 +120,4 @@ resource "google_compute_firewall" "default" {
   allow {
     protocol = "icmp"
   }
-}
+} 
