@@ -2,6 +2,7 @@ upstream backend {
     least_conn;
     server ${web1_ip};
     server ${web2_ip};
+    server ${container_ip};
 }
 
 server {
