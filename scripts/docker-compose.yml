@@ -1,0 +1,26 @@
+version: "3"
+services:
+  node-server:
+    image: gcr.io/mapan-243606/node-server
+    ports:
+      - 80:8001
+    environment:
+      - PG_USER=postgres
+      - PG_PASS=postgres
+      - PG_PORT=5432
+      - PG_DB_NAME=postgres
+      - PG_HOST=db
+    depends_on:
+      - db
+    networks:
+      - node-pg
+
+  db:
+    image: postgres:9.6-alpine
+    expose:
+      - 5432
+    networks: 
+      - node-pg
+
+networks:
+  node-pg:
